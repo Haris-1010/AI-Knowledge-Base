@@ -8,7 +8,9 @@
       "Bash(vercel --version)",
       "Bash(vercel deploy *)",
       "Bash(node *)",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(vercel login *)",
+      "Bash(vercel env *)"
     ]
   }
 }
