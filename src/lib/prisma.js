@@ -5,8 +5,13 @@ import { Pool } from "pg";
 const globalForPrisma = globalThis;
 
 function createPrismaClient() {
+  const url = new URL(process.env.DATABASE_URL);
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    host: url.hostname,
+    port: parseInt(url.port || "5432"),
+    user: url.username,
+    password: decodeURIComponent(url.password),
+    database: url.pathname.replace("/", ""),
     ssl: {
       rejectUnauthorized: false,
     },
