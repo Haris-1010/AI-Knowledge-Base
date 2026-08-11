@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(npx next *)",
+      "Bash(openssl rand *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(vercel --version)",
+      "Bash(vercel deploy *)",
+      "Bash(node *)",
+      "Bash(gh auth *)"
+    ]
+  }
+}
