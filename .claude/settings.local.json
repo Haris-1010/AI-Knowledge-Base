@@ -10,7 +10,8 @@
       "Bash(node *)",
       "Bash(gh auth *)",
       "Bash(vercel login *)",
-      "Bash(vercel env *)"
+      "Bash(vercel env *)",
+      "Bash(curl *)"
     ]
   }
 }
