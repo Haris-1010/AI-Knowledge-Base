@@ -36,6 +36,20 @@ export async function POST(req, { params }) {
     const { id } = await params;
     const { title } = await req.json();
 
+    // Ensure user exists in DB
+    let dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          id: session.user.id,
+          name: session.user.name || "User",
+          email: session.user.email || null,
+          image: session.user.image || null,
+          credits: 50,
+        }
+      });
+    }
+
     // Verify KB ownership
     const kb = await prisma.knowledgeBase.findFirst({
       where: { id, userId: session.user.id }

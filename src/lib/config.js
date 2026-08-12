@@ -42,6 +42,7 @@ const config = {
   },
   ai: {
     apiKey: process.env.MU_API_KEY,
+    geminiKey: process.env.GEMINI_API_KEY,
     kbCreationCost: 0,     // Free to make a new KB (removed 50 credit charge)
     sourceTrainingCost: 10,  // 10 credits per source trained
     chatQueryCost: 2,       // 2 credits per chat play query (reduced from 3)

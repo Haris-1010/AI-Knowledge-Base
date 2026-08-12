@@ -39,6 +39,20 @@ export async function POST(req) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
+    // Ensure user exists in DB (handles OAuth / API-key signup edge cases)
+    let dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!dbUser) {
+      dbUser = await prisma.user.create({
+        data: {
+          id: session.user.id,
+          name: session.user.name || "User",
+          email: session.user.email || null,
+          image: session.user.image || null,
+          credits: 50,
+        }
+      });
+    }
+
     const headerApiKey = req.headers.get("x-custom-api-key");
     const customApiKey = headerApiKey || body.customApiKey || session.user.customApiKey || null;
     const isUsingCustomKey = Boolean(customApiKey && customApiKey.trim().length > 0);

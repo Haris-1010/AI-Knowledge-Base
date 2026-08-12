@@ -9,6 +9,27 @@ import {
 } from "react-icons/fa";
 import clsx from "clsx";
 
+// Simple markdown-to-HTML renderer for chat messages
+const renderMarkdown = (text) => {
+  if (!text) return "";
+  let html = text
+    // Bold: **text**
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Italic: *text*
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Inline code: `code`
+    .replace(/`(.*?)`/g, '<code class="bg-zinc-800 px-1.5 py-0.5 rounded text-indigo-300 text-[10px]">$1</code>')
+    // Bullet points: - item
+    .replace(/^[\-\*] (.+)$/gm, '<div class="flex gap-2 my-1"><span class="text-indigo-400 mt-0.5">•</span><span>$1</span></div>')
+    // Numbered lists: 1. item
+    .replace(/^(\d+)\. (.+)$/gm, '<div class="flex gap-2 my-1"><span class="text-indigo-400 font-bold text-[10px] mt-0.5">$1.</span><span>$2</span></div>')
+    // Blockquotes: > text
+    .replace(/^> (.+)$/gm, '<div class="border-l-2 border-indigo-500/50 pl-3 text-zinc-400 italic my-1">$1</div>')
+    // Line breaks
+    .replace(/\n/g, '<br/>');
+  return html;
+};
+
 const getKbGradient = (name, index = 0) => {
   const gradients = [
     "from-indigo-500 to-violet-500",
@@ -198,11 +219,33 @@ export default function WorkspacePage() {
     let payload = {};
     if (type === "url") {
       if (!scrapUrl.trim() || !scrapName.trim()) return;
-      payload = {
-        type: "url",
-        name: scrapName.trim(),
-        content: `Scraped website content from ${scrapUrl.trim()}. Key points: Customized database documentation index.`
-      };
+
+      // Fetch real URL content
+      setActionLoading(true);
+      try {
+        const fetchRes = await fetch("/api/fetch-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: scrapUrl.trim() })
+        });
+
+        const fetchJson = await fetchRes.json();
+        if (!fetchRes.ok) {
+          alert(`Failed to fetch URL: ${fetchJson.error}`);
+          setActionLoading(false);
+          return;
+        }
+
+        payload = {
+          type: "url",
+          name: scrapName.trim() || fetchJson.title || scrapUrl.trim(),
+          content: `Source URL: ${fetchJson.url}\nPage Title: ${fetchJson.title}\n\nContent:\n${fetchJson.content}`
+        };
+      } catch (e) {
+        alert("Failed to fetch URL content. Please try again.");
+        setActionLoading(false);
+        return;
+      }
     } else if (type === "qa") {
       if (!qaQuestion.trim() || !qaAnswer.trim()) return;
       payload = {
@@ -654,7 +697,7 @@ export default function WorkspacePage() {
                                         </div>
                                       );
                                     }
-                                    return <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>;
+                                    return <div className="leading-relaxed whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} />;
                                   })()}
                                   
                                   {/* Citations Accordion overhauled into visual grid card deck */}
