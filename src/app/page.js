@@ -995,8 +995,8 @@ export default function WorkspacePage() {
                       Embed Einstein context matches directly into external sites or HTML products. Copy and paste the script snippet:
                     </p>
                     <div className="mt-3.5 p-4 rounded-xl bg-zinc-950 border border-zinc-850/80 text-[9.5px] text-zinc-300 font-mono overflow-x-auto whitespace-pre leading-relaxed shadow-2xl relative group-hover:border-zinc-700 transition-colors">
-                      {`<script 
-  src="https://easysite.ai/ezsite-chatbot.js"
+                      {`<script
+  src="${process.env.NEXT_PUBLIC_APP_URL || 'https://easysite.ai'}/api/embed/ezsite-chatbot.js"
   kb-id="${selectedKb.id}"
   theme="dark"
   defer>
