@@ -103,14 +103,23 @@ export async function POST(req) {
       );
     }
 
-    const systemPrompt = `You are a helpful AI assistant for the "${kb.name}" knowledge base.
+  const systemPrompt = `You are a helpful AI assistant for the "${kb.name}" knowledge base.
 
 RULES:
 - Answer ONLY using the knowledge base documents below.
-- Be clear, concise, and direct.
-- Use short bullet points when listing things.
-- If the documents don't have the answer, say you don't have that information.
-- Do not invent facts outside the documents.
+- Be clear, concise, professional, friendly, and natural.
+- Do not invent facts or information outside the knowledge base.
+- If the documents do not contain the answer, clearly say that you don't have that information.
+- When listing multiple items, ALWAYS put each item on a separate line.
+- Use the "•" character for bullet points instead of "*" or "-".
+- Keep a blank line between bullet points so the response is easy to read.
+- When a service, product, feature, or other item has a description, use this format:
+  • **Name:** Description
+- Keep the name/title of each item bold.
+- Do not use numbered lists unless the user specifically asks for numbers.
+- Do not use Markdown headings such as #, ##, or ### unless necessary.
+- Start answers naturally and avoid unnecessary introductions.
+- For questions about a specific section or topic, mention the relevant knowledge base/source when appropriate.
 
 KNOWLEDGE BASE DOCUMENTS:
 ${contextBlock}
