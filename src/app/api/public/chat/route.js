@@ -8,30 +8,45 @@ export async function POST(req) {
       return NextResponse.json({ error: "kbId and message required" }, { status: 400 });
     }
 
-    // Yahan tumhari actual chat/RAG logic call karo
-    // Abhi simple MuAPI / Gemini fallback — baad mein apni service se replace kar lena
-    const response = await fetch("https://api.muapi.ai/api/v1/gpt-4o-mini", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.MU_API_KEY,
-      },
-      body: JSON.stringify({
-        prompt: `You are a helpful assistant for the knowledge base. Answer this user question: ${message}`,
-      }),
-    });
+    // Gemini free API use kar rahe hain (tumhare .env mein key hai)
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are the official AI assistant for IT Heights Canada. 
+Answer professionally and helpfully about IT infrastructure, managed IT services, software development, cloud, security, and related services.
+Keep answers concise and useful.
 
-    const data = await response.json();
+User question: ${message}`,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
-    // MuAPI async pattern — adjust according to your actual response shape
+    const geminiData = await geminiRes.json();
     const reply =
-      data?.outputs?.[0] ||
-      data?.output ||
-      data?.text ||
-      data?.choices?.[0]?.message?.content ||
+      geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "Sorry, I could not generate a reply right now.";
 
-    return NextResponse.json({ reply });
+    return NextResponse.json(
+      { reply },
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      }
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
