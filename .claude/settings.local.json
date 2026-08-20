@@ -19,7 +19,8 @@
       "Bash(vercel *)",
       "Bash(npm run *)",
       "Bash(cmd.exe *)",
-      "Bash(powershell.exe -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")"
+      "Bash(powershell.exe -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(npm -v)"
     ]
   }
 }
